@@ -1,0 +1,12 @@
+# Django and core dependencies
+Django>=5.0
+psycopg2-binary>=2.9.9  # PostgreSQL adapter
+python-dotenv>=1.0.0     # For environment variables
+
+# Development tools
+black>=24.0.0           # Code formatter
+flake8>=7.0.0           # Linter
+isort>=5.13.0           # Import sorter
+
+# Optional: LaTeX generation (if needed)
+# django-latex>=0.1.0   # Uncomment if you want to generate LaTeX from Django templates
