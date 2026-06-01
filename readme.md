@@ -14,23 +14,20 @@ Built with **Django (Python)** for the backend and **LaTeX** for documentation, 
 ---
 
 ## 🛠️ Project Structure
-sky_score/
+SkyScore/
 ├── src/
-│   ├── python/          # Django project and apps
-│   │   ├── sky_score/   # Main Django project
-│   │   ├── scoring/     # Scoring logic app
-│   │   ├── users/       # User management app
-│   │   └── ...
-│   │
-│   └── latex/           # LaTeX documentation
-│       ├── main.tex
-│       ├── preamble.tex
-│       ├── titlepage.tex
-│       └── chapters/    # One folder per chapter
-│
+│   ├── python/
+│   │   ├── sky_score/       # Dossier du projet Django
+│   │   │   ├── __init__.py
+│   │   │   ├── settings.py
+│   │   │   ├── urls.py
+│   │   │   ├── asgi.py
+│   │   │   └── wsgi.py
+│   │   ├── manage.py        # Fichier de gestion Django
+│   │   └── venv/            # Environnement virtuel
+│   └── latex/
 ├── readme.md
-├── .gitignore
-└── licence
+└── .gitignore
 
 ---
 
