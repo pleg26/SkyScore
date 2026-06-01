@@ -1,51 +1,51 @@
-# 📌 Acteurs et Rôles - SkyScore
+# 📌 Actors and Roles - SkyScore
 
-*Dernière mise à jour : 2026-06-01*
-*Validé par : Pierre LEGRENEUR*
-
----
-
-## **👥 Acteurs et Responsabilités**
-
-### **🏆 Organisateur**
-- **Rôle** : Gère une **saison** (période définie avec une date de début et de fin).
-- **Responsabilités** :
-  - Créer et gérer les compétitions **au sein d'une saison**.
-  - Calculer un **classement permanent** sur les compétitions de la saison.
-  - **Réinitialiser** le classement permanent au début de chaque nouvelle saison.
+*Last updated: 2026-06-01*
+*Validated by: Pierre LEGRENEUR*
 
 ---
 
-### **✈️ Pilote ULM**
-- **Rôle** : Participe aux compétitions et consulte ses performances.
-- **Responsabilités** :
-  - Voir son **historique** de participations.
-  - Consulter ses **classements** :
-    - **En temps réel** pour les épreuves **en cours** (avec accès aux détails : cartes, scoring, pénalités).
-    - **Globaux** pour chaque épreuve **finalisée** (uniquement le scoring global, sans détails des calculs intermédiaires).
+## **👥 Actors and Responsibilities**
+
+### **🏆 Organizer**
+- **Role**: Manages a **season** (defined period with start and end dates).
+- **Responsibilities**:
+  - Create and manage competitions **within a season**.
+  - Calculate a **permanent ranking** across all competitions of the season.
+  - **Reset** the permanent ranking at the start of each new season.
 
 ---
 
-### **⚖️ Juge / Arbitre**
-- **Rôle** : Supervise les épreuves et valide les résultats.
-- **Responsabilités** :
-  - Créer des épreuves.
-  - Charger des **traces GPS**.
-  - Noter les pilotes (temps, pénalités).
-  - Éditer les résultats.
-  - **Archiver** les détails du scoring (avec traces GPS) à la fin de chaque compétition.
+### **✈️ ULM Pilot**
+- **Role**: Participates in competitions and monitors personal performance.
+- **Responsibilities**:
+  - View personal **participation history**.
+  - Check **rankings**:
+    - **Real-time** for **ongoing events** (with access to details: maps, scoring, penalties).
+    - **Global** for each **finalized event** (only the overall scoring, without intermediate calculation details).
+
+---
+
+### **⚖️ Judge / Referee**
+- **Role**: Oversees events and validates results.
+- **Responsibilities**:
+  - Create events.
+  - Upload **GPS tracks**.
+  - Score pilots (time, penalties).
+  - Edit results.
+  - **Archive** scoring details (including GPS tracks) at the end of each competition.
 
 ---
 ### **👀 Public**
-- **Rôle** : Consulte les résultats et le suivi en direct.
-- **Responsabilités** :
-  - Consulter les **résultats publics** (classements finaux).
-  - Accéder au **live tracking** pendant les épreuves.
+- **Role**: Views results and live tracking.
+- **Responsibilities**:
+  - Consult **public results** (final rankings).
+  - Access **live tracking** during events.
 
 ---
 ---
-## **📝 Notes Complémentaires**
-- **Classement permanent** : Calculé sur toutes les compétitions d'une saison. Réinitialisé à zéro pour la saison suivante.
-- **Détails des épreuves** :
-  - Pour les pilotes : **accessibles uniquement pendant l'épreuve** (cartes, scoring détaillé, pénalités).
-  - Pour les juges : **archivés** à la fin de chaque compétition (traces GPS + détails du scoring).
+## **📝 Additional Notes**
+- **Permanent ranking**: Calculated across all competitions in a season. Reset to zero for the next season.
+- **Event details**:
+  - For pilots: **Accessible only during the event** (maps, detailed scoring, penalties).
+  - For judges: **Archived** at the end of each competition (GPS tracks + scoring details).
