@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
 
-{% block title %}Seasons{% endblock %}
+{% block title %}{{ page_title|default:'Seasons' }}{% endblock %}
 
 {% block content %}
 <section id="mainContent">
-    <h2>Season management</h2>
+    <h2>{{ page_title|default:'Season management' }}</h2>
 
     <table>
         <thead>
@@ -13,7 +13,9 @@
                 <th>Dates</th>
                 <th>Global status</th>
                 <th>Your active season</th>
-                <th>Actions</th>
+                {% if show_actions %}
+                    <th>Actions</th>
+                {% endif %}
             </tr>
         </thead>
         <tbody>
@@ -29,19 +31,21 @@
                             -
                         {% endif %}
                     </td>
-                    <td>
-                        <a href="{% url 'season:edit' season.pk %}">Edit</a>
-                        {% if user.role == 'ADM' %}
-                            <form method="post" action="{% url 'season:activate' season.pk %}" style="display:inline; margin-left: 8px;">
-                                {% csrf_token %}
-                                <button class="BtnSubmit" type="submit">Set active</button>
-                            </form>
-                        {% endif %}
-                    </td>
+                    {% if show_actions %}
+                        <td>
+                            <a href="{% url 'season:edit' season.pk %}">Edit</a>
+                            {% if user.role == 'ADM' %}
+                                <form method="post" action="{% url 'season:activate' season.pk %}" style="display:inline; margin-left: 8px;">
+                                    {% csrf_token %}
+                                    <button class="BtnValidate" type="submit">Set active</button>
+                                </form>
+                            {% endif %}
+                        </td>
+                    {% endif %}
                 </tr>
             {% empty %}
                 <tr>
-                    <td colspan="5">No seasons available.</td>
+                    <td colspan="{% if show_actions %}5{% else %}4{% endif %}">No seasons available.</td>
                 </tr>
             {% endfor %}
         </tbody>

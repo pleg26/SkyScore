@@ -1,7 +1,12 @@
-from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login, logout
+from urllib.error import URLError
+from urllib.request import Request, urlopen
+
 from django.contrib import messages
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.http import Http404, HttpResponse
+from django.shortcuts import redirect, render
+
 from .forms import LoginForm
 from .utils.context import base_context
 
@@ -40,3 +45,22 @@ def logout_view(request):
 def home_view(request):
     """Home page view."""
     return render(request, 'common/home.html', base_context(request))
+
+
+def osm_tile_proxy(request, z, x, y):
+    if min(z, x, y) < 0:
+        raise Http404('Invalid tile coordinates.')
+
+    tile_url = f'https://tile.openstreetmap.org/{z}/{x}/{y}.png'
+    upstream_request = Request(tile_url, headers={'User-Agent': 'SkyScore/1.0'})
+
+    try:
+        with urlopen(upstream_request, timeout=10) as upstream_response:
+            content = upstream_response.read()
+            content_type = upstream_response.headers.get('Content-Type', 'image/png')
+    except URLError as exc:
+        raise Http404('Tile unavailable.') from exc
+
+    response = HttpResponse(content, content_type=content_type)
+    response['Cache-Control'] = 'public, max-age=3600'
+    return response

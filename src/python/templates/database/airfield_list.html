@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Airfield management{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/styleBaseDataBase.css' %}" />
+{% endblock %}
+
+{% block content %}
+{% if show_create_form or show_edit_form %}
+<section id="asideContent">
+    <h2>{{ aside_title }}</h2>
+    <form method="post" action="{% if form_action_pk %}{% url form_action form_action_pk %}{% else %}{% url form_action %}{% endif %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <p class="form-actions">
+            <button class="BtnValidate" type="submit">Save</button>
+            <a class="BtnCancel" href="{% url 'database:airfield_list' %}">Cancel</a>
+        </p>
+    </form>
+    {% if airfield_map %}
+        <div class="asideMap">
+            {{ airfield_map|safe }}
+        </div>
+    {% endif %}
+</section>
+{% endif %}
+
+<section id="mainContent">
+    <h2>Airfield management</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Code</th>
+                <th>Name</th>
+                <th>Country</th>
+                <th>Lat</th>
+                <th>Lon</th>
+                <th>Alt</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for airfield in airfields %}
+                <tr>
+                    <td>{{ airfield.code }}</td>
+                    <td>{{ airfield.name }}</td>
+                    <td>{{ airfield.country.iso3 }}</td>
+                    <td>{{ airfield.lat }}</td>
+                    <td>{{ airfield.lon }}</td>
+                    <td>{{ airfield.alt }}</td>
+                    <td>
+                        <a class="BtnModify" href="{% url 'database:airfield_edit' airfield.pk %}">Modify</a>
+                        <form method="post" action="{% url 'database:airfield_delete' airfield.pk %}" style="display:inline; margin-left: 8px;" onsubmit="return confirm('Confirm deletion of ' + '{{ airfield.code|escapejs }}' + ' - ' + '{{ airfield.name|escapejs }}' + ' ?');">
+                            {% csrf_token %}
+                            <button class="BtnDelete" type="submit">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="7">No airfield available.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endblock %}

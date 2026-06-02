@@ -69,6 +69,8 @@ INSTALLED_APPS = [
     # SkyScore apps
     'common',      # App commune (authentification, modèles partagés)
     'season',      # Gestion des saisons
+    'competition', # Gestion des compétitions
+    'database',    # Gestion des tables de reference (country, airfield)
     # Ajouter les autres apps ici plus tard (competition, scoring, etc.)
 ]
 

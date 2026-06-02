@@ -14,7 +14,26 @@
                 <!-- Organizer links -->
                 {% if user.is_authenticated %}
                     {% if user.role == 'ORG' or user.role == 'ADM' %}
-                        <li><a href="{% url 'season:list' %}">Seasons</a></li>
+                        <li>
+                            <a href="#">Database</a>
+                            <ul class="sm">
+                                <li><a href="{% url 'database:country_list' %}">Country</a></li>
+                                <li><a href="{% url 'database:airfield_list' %}">Airfield</a></li>
+                            </ul>
+                        </li>
+                    {% endif %}
+                {% endif %}
+                
+                {% if user.is_authenticated %}
+                    {% if user.role == 'ORG' or user.role == 'ADM' %}
+                        <li>
+                            <a href="#">Seasons</a>
+                            <ul class="sm">
+                                <li><a href="{% url 'season:select' %}">Select active season</a></li>
+                                <li><a href="{% url 'season:active' %}">View active season</a></li>
+                                <li><a href="{% url 'season:others' %}">View other seasons</a></li>
+                            </ul>
+                        </li>
                     {% endif %}
                 {% endif %}
 

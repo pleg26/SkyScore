@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Country management{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/styleBaseDataBase.css' %}" />
+{% endblock %}
+
+{% block content %}
+{% if show_create_form or show_edit_form %}
+<section id="asideContent">
+    <h2>{{ aside_title }}</h2>
+    <form method="post" action="{% if form_action_pk %}{% url form_action form_action_pk %}{% else %}{% url form_action %}{% endif %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <p class="form-actions">
+            <button class="BtnValidate" type="submit">Save</button>
+            <a class="BtnCancel" href="{% url 'database:country_list' %}">Cancel</a>
+        </p>
+    </form>
+</section>
+{% endif %}
+
+<section id="mainContent">
+    <h2>Country management</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>ISO3</th>
+                <th>Name</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for country in countries %}
+                <tr>
+                    <td>{{ country.iso3 }}</td>
+                    <td>{{ country.name }}</td>
+                    <td>
+                        <a class="BtnModify" href="{% url 'database:country_edit' country.pk %}">Modify</a>
+                        <form method="post" action="{% url 'database:country_delete' country.pk %}" style="display:inline; margin-left: 8px;" onsubmit="return confirm('Confirm deletion of ' + '{{ country.iso3|escapejs }}' + ' - ' + '{{ country.name|escapejs }}' + ' ?');">
+                            {% csrf_token %}
+                            <button class="BtnDelete" type="submit">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="3">No country available.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endblock %}

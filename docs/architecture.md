@@ -1,99 +1,52 @@
-# 🏗️ SkyScore Architecture
+# SkyScore Architecture
 
-*Last updated: 2026-06-01*
-*Validated by: Pierre LEGRENEUR*
+Last updated: 2026-06-02
 
----
-
-## **📁 Project Structure**
-SkyScore follows a **modular architecture** based on Django apps, with each feature isolated in its own sub-project.
-This structure reflects the **menu hierarchy** of the interface and ensures **scalability** and **maintainability**.
-
+## Project Layout (Current)
 SkyScore/
-├── src/
-│   ├── python/
-│   │   ├── sky_score/          # Main Django project (settings, global URLs)
-│   │   │   ├── settings.py
-│   │   │   ├── urls.py         # Includes all app URLs
-│   │   │   └── wsgi.py
-│   │   │
-│   │   ├── common/             # Shared app (authentication, base models, login)
-│   │   │   ├── models.py       # Shared models (e.g., User, Administrator)
-│   │   │   ├── forms.py
-│   │   │   ├── views.py        # Login/logout views
-│   │   │   ├── urls.py         # Authentication URLs
-│   │   │   └── templates/      # Base templates (e.g., base.html, navigation.html)
-│   │   │
-│   │   ├── season/             # Season management app
-│   │   │   ├── models.py       # Season model
-│   │   │   ├── forms.py
-│   │   │   ├── views.py        # CRUD views for seasons
-│   │   │   ├── urls.py         # Season-specific URLs
-│   │   │   └── templates/
-│   │   │       └── season/     # Season templates
-│   │   │
-│   │   ├── competition/        # Competition management app
-│   │   │   ├── models.py
-│   │   │   ├── forms.py
-│   │   │   ├── views.py
-│   │   │   ├── urls.py
-│   │   │   └── templates/
-│   │   │       └── competition/
-│   │   │
-│   │   ├── scoring/             # Scoring logic app
-│   │   │   ├── models.py
-│   │   │   ├── forms.py
-│   │   │   ├── views.py
-│   │   │   ├── urls.py
-│   │   │   └── templates/
-│   │   │       └── scoring/
-│   │   │
-│   │   └── manage.py            # Django management script
-│   │
-│   └── latex/                   # LaTeX documentation
-│
-├── docs/                       # Project documentation
-│   ├── architecture.md         # This file
-│   ├── organizer_season_management.md
-│   └── actors_and_roles.md
-│
-├── README.md                   # Project overview
-└── .gitignore
+1. src/python/sky_score/: Django project configuration
+2. src/python/common/: authentication, shared context, global utilities, OSM tile proxy
+3. src/python/season/: season selection and active-season flows
+4. src/python/competition/: competition domain models and season auto-linking
+5. src/python/database/: CRUD management for Country and Airfield
+6. src/python/templates/: shared and app templates
+7. src/python/static/css/: base styles and menu/database styles
 
----
+## Active Django Apps
+Configured in settings:
+1. common
+2. season
+3. competition
+4. database
 
-## **🔧 Key Design Principles**
-1. **Modularity**:
-   - Each feature (e.g., `season`, `competition`) is a **self-contained Django app**.
-   - Apps can be **enabled/disabled** independently in `settings.py`.
+## URL Routing (Current)
+1. / -> common app routes
+2. /season/ -> season app routes
+3. /database/ -> database app routes
+4. /admin/ -> Django admin
+5. /osm-tiles/<z>/<x>/<y>.png -> OSM tile proxy (common)
 
-2. **Dynamic Menu Generation**:
-   - The main menu (`navigation.html`) is **dynamically generated** based on:
-     - Active apps in `settings.py`.
-     - User permissions (e.g., organizers see "Season Management", pilots see "My Results").
+## Key Functional Architecture
+1. Email-only authentication with custom User model in common
+2. Season workflow split into:
+   1. Select active season
+   2. View active season
+   3. View other seasons
+3. Database module:
+   1. Country list + form in aside panel
+   2. Airfield list + form in aside panel
+   3. Inline delete with popup confirmation
+4. Maps are centralized in common utilities:
+   1. Shared tile layers
+   2. Shared map generation helpers
+   3. Shared OSM proxy endpoint
 
-3. **Shared Resources**:
-   - `common/` app contains:
-     - **Base models** (e.g., `User`, `Administrator`).
-     - **Authentication logic** (login, logout, permissions).
-     - **Base templates** (e.g., `base.html` with header/footer).
+## Notes on Modularity
+1. Country and Airfield models are maintained by database app.
+2. Competition app references these models.
+3. UI keeps a consistent split: mainContent for lists, asideContent for forms.
 
-4. **Scalability**:
-   - New features (e.g., `live_tracking/`) can be added as new apps **without breaking existing code**.
-
----
-
-## **📌 App Naming Conventions**
-| App          | Purpose                          | Example URLs               |
-|--------------|----------------------------------|-----------------------------|
-| `common`     | Shared logic (auth, base models)| `/login/`, `/logout/`       |
-| `season`     | Season management               | `/season/create/`, `/season/list/` |
-| `competition`| Competition management          | `/competition/create/`     |
-| `scoring`    | Scoring logic                   | `/scoring/calculate/`      |
-
----
-
-## **🚀 Next Steps**
-1. **Implement the `common/` app** (base models, authentication).
-2. **Implement the `season/` app** (as per `organizer_season_management.md`).
-3. **Set up dynamic menu generation** in `base.html`.
+## Planned Extensions
+1. Additional database reference models (competitor, task, nfz, deck)
+2. Broader map reuse across other modules
+3. Scoring app (not implemented yet)

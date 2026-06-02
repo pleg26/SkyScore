@@ -1,0 +1,244 @@
+:root {
+	--header-height: clamp(80px, 15vh, 140px);
+	--menu-height: clamp(42px, 6vh, 64px);
+	--safe-top: env(safe-area-inset-top, 0px);
+	--header-offset: 2px;
+}
+
+header{
+	position : fixed; 
+	left: 0;
+	top: calc(var(--safe-top) + var(--header-offset));
+	height: var(--header-height);
+	width:100%;
+	background-color: white;
+	background-image: url("../img/logo_skyscore.png"); 
+	background-repeat: no-repeat;
+	background-size: auto calc(100% - 4px);
+	background-position: left center;
+	z-index: 20;
+}
+
+body {
+	background-color: transparent;
+}
+
+body section#msgAccueil {
+	position:fixed;
+	top : calc(var(--safe-top) + var(--header-offset) + 4px);
+	left : 75%;
+	margin: 0;
+	padding: 0;
+	font-family: "Lucida Grande", Tahoma, Geneva, Verdana, Arial, Helvetica, sans-serif;
+	font-size: 14px;
+	color: black;
+	background-color: transparent;
+	z-index: 26;
+}
+
+/* Boutons standards */
+.BtnSubmit,
+.BtnCancel,
+.BtnModify,
+.BtnDelete,
+.BtnValidate {
+	width:auto;
+	display: inline-block;
+	box-sizing: border-box;
+	text-align: center;
+	text-decoration: none;
+	border-radius: 10px;
+	padding: 2px 10px;
+}
+
+.BtnSubmit,
+.BtnCancel {
+	color: #1f2937;
+	background-color: #e5e7eb;
+	border-bottom: 1px solid #6b7280;
+}
+
+.BtnSubmit:hover,
+.BtnCancel:hover {
+	color: #e5e7eb;
+	background-color: #374151;
+}
+
+.BtnModify {
+	width:auto;
+	display: inline-block;
+	box-sizing: border-box;
+	text-align: center;
+	text-decoration: none;
+	color: #ffffff;
+	background-color: #2563eb;
+	border-bottom: 1px solid #1d4ed8;
+	border-radius: 10px;
+	padding: 2px 10px;
+}
+
+.BtnModify:hover {
+	color: #2563eb;
+	background-color: white;
+}
+
+.BtnDelete {
+	width:auto;
+	display: inline-block;
+	box-sizing: border-box;
+	text-align: center;
+	text-decoration: none;
+	color: #ffffff;
+	background-color: #dc2626;
+	border-bottom: 1px solid #b91c1c;
+	border-radius: 10px;
+	padding: 2px 10px;
+}
+
+.BtnDelete:hover {
+	color: #dc2626;
+	background-color: white;
+}
+
+.BtnValidate {
+	color: #ffffff;
+	background-color: #16a34a;
+	border-bottom: 1px solid #15803d;
+	border-radius: 10px;
+	padding: 2px 10px;
+}
+
+.BtnValidate:hover {
+	color: #16a34a;
+	background-color: white;
+}
+
+.BtnPdf {
+	text-decoration: none;
+	color: red;
+	background-color: white;
+	border-bottom: 1px solid red;
+	border-radius: 10px;
+	padding: 4px 12px;
+	font-weight: bold;
+	cursor: pointer;
+}
+
+.BtnPdf:hover {
+	color: white;
+	background-color: red;
+}
+
+body h1 {
+	width : 80%;
+	left : 20%;
+	text-align: center;
+	color: black;
+}
+
+/*Form de gestion des données*/
+body section#asideContent {
+	position : fixed;
+	width: 28%;
+	top : 25%;
+	margin: 0px;
+	padding: 0px;
+	background-color: lightgrey;
+	color: black;
+	z-index: 2;
+}
+
+body section#asideContent a,
+body section#asideContent a:visited {
+	color: black;
+	text-decoration: underline;
+}
+
+body section#asideContent a:hover,
+body section#asideContent a:focus {
+	color: black;
+}
+
+body section#asideContent a.BtnCancel,
+body section#asideContent a.BtnCancel:visited,
+body section#asideContent a.BtnModify,
+body section#asideContent a.BtnModify:visited,
+body section#asideContent a.BtnDelete,
+body section#asideContent a.BtnDelete:visited,
+body section#asideContent a.BtnValidate,
+body section#asideContent a.BtnValidate:visited,
+body section#asideContent a.BtnSubmit,
+body section#asideContent a.BtnSubmit:visited {
+	text-decoration: none;
+}
+
+body section#asideContent input[type = "submit"] {
+	display: block;
+	width: fit-content;
+	margin: auto;
+	padding: 4px 4px;
+}
+
+.form-actions {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 10px;
+	flex-wrap: wrap;
+	margin-top: 8px;
+	width: 100%;
+	clear: both;
+}
+
+.form-actions .BtnSubmit,
+.form-actions .BtnCancel,
+.form-actions .BtnModify,
+.form-actions .BtnDelete,
+.form-actions .BtnValidate {
+	margin: 0;
+	float: none;
+}
+
+body section#asideContent .form-actions input[type = "submit"] {
+	display: inline-block;
+	width: auto;
+	margin: 0;
+}
+
+body section#asideContent .asideMap {
+	margin-top: 16px;
+	padding: 0 8px 8px 8px;
+}
+
+/* mainContent : tableau d'affichage des données*/
+body section#mainContent {
+	position:absolute;
+	top : 25%;
+	left : 31%;
+	width : 67%;
+	z-index: 4;
+}
+
+body section#mainContent td {
+	border:1px solid black;
+	padding: 0px 5px 0px 5px;
+}
+
+/* form */
+form label {
+	display : block;
+	width : 200px;
+	float : left;
+	text-align: left;
+	padding : 4px 10px 0 0;
+}
+
+form input[type='email'], form input[type='password'], form input[type='text'] {
+	display : block;
+	width : 250px;
+	padding : 2px;
+}
+
+p.error{
+	color: red;
+}

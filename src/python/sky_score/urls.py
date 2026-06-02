@@ -16,6 +16,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include(('common.urls', 'common'), namespace='common')),
     path('season/', include(('season.urls', 'season'), namespace='season')),
+    path('database/', include(('database.urls', 'database'), namespace='database')),
 ]
 
 # Pour servir les fichiers media en développement

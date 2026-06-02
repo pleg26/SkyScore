@@ -28,6 +28,10 @@ class SeasonViewsTests(TestCase):
         response = self.client.get(reverse('season:list'))
         self.assertEqual(response.status_code, 302)
 
+    def test_active_and_other_views_require_login(self):
+        self.assertEqual(self.client.get(reverse('season:active')).status_code, 302)
+        self.assertEqual(self.client.get(reverse('season:others')).status_code, 302)
+
     def test_admin_can_activate_season(self):
         self.client.login(email='admin1@example.com', password='StrongPassword123')
 
@@ -52,3 +56,13 @@ class SeasonViewsTests(TestCase):
         admin.refresh_from_db()
 
         self.assertEqual(admin.active_season_id, self.season_2027.id)
+
+    def test_other_view_excludes_active_season(self):
+        Administrator.objects.create(user=self.admin_user, active_season=self.season_2026)
+        self.client.login(email='admin1@example.com', password='StrongPassword123')
+
+        response = self.client.get(reverse('season:others'))
+        self.assertEqual(response.status_code, 200)
+        seasons = list(response.context['seasons'])
+        self.assertIn(self.season_2027, seasons)
+        self.assertNotIn(self.season_2026, seasons)

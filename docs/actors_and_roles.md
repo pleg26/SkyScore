@@ -1,51 +1,25 @@
-# 📌 Actors and Roles - SkyScore
+# Actors and Roles - SkyScore
 
-*Last updated: 2026-06-01*
-*Validated by: Pierre LEGRENEUR*
+Last updated: 2026-06-02
 
----
+## Roles Defined in the Current User Model
+1. ADM (Administrator)
+2. ORG (Organizer)
+3. PIL (Pilot)
+4. JUD (Judge)
+5. PUB (Public)
 
-## **👥 Actors and Responsibilities**
+## Currently Implemented Access in the UI
+1. ADM:
+   1. Full season management, including active-season switch
+   2. Database menu (Country, Airfield CRUD)
+2. ORG:
+   1. Season consultation flows (select/active/others)
+   2. No database CRUD access
+3. PIL, JUD, PUB:
+   1. Roles exist in the model
+   2. Dedicated functional modules are not exposed yet in navigation
 
-### **🏆 Organizer**
-- **Role**: Manages a **season** (defined period with start and end dates).
-- **Responsibilities**:
-  - Create and manage competitions **within a season**.
-  - Calculate a **permanent ranking** across all competitions of the season.
-  - **Reset** the permanent ranking at the start of each new season.
-
----
-
-### **✈️ ULM Pilot**
-- **Role**: Participates in competitions and monitors personal performance.
-- **Responsibilities**:
-  - View personal **participation history**.
-  - Check **rankings**:
-    - **Real-time** for **ongoing events** (with access to details: maps, scoring, penalties).
-    - **Global** for each **finalized event** (only the overall scoring, without intermediate calculation details).
-
----
-
-### **⚖️ Judge / Referee**
-- **Role**: Oversees events and validates results.
-- **Responsibilities**:
-  - Create events.
-  - Upload **GPS tracks**.
-  - Score pilots (time, penalties).
-  - Edit results.
-  - **Archive** scoring details (including GPS tracks) at the end of each competition.
-
----
-### **👀 Public**
-- **Role**: Views results and live tracking.
-- **Responsibilities**:
-  - Consult **public results** (final rankings).
-  - Access **live tracking** during events.
-
----
----
-## **📝 Additional Notes**
-- **Permanent ranking**: Calculated across all competitions in a season. Reset to zero for the next season.
-- **Event details**:
-  - For pilots: **Accessible only during the event** (maps, detailed scoring, penalties).
-  - For judges: **Archived** at the end of each competition (GPS tracks + scoring details).
+## Notes
+1. Authentication is email-only.
+2. Fine-grained role-based features beyond season/database are planned but not yet implemented.

@@ -1,69 +1,53 @@
 # SkyScore
 
-*A modular scoring system for ULM (Ultralight Aviation) competitions.*
-*Built with Django (Python) and LaTeX for documentation.*
+Modular Django application for ULM competition management.
 
----
+## Current Functional Scope
+Implemented modules:
+1. Authentication (email-only login)
+2. Season management (select active, view active, view others)
+3. Database management for Country and Airfield (create, edit, delete)
+4. Competition domain models with automatic season linking
+5. Centralized map utilities (Folium) and OSM tile proxy
 
-## **📌 Project Overview**
-SkyScore manages competitions, seasons, and rankings for **Paramotor** and **Microlight** events (Classic, Slalom, STOL).
-It provides:
-- **Season management** (with active season per administrator).
-- **Competition and event organization**.
-- **Real-time scoring and rankings**.
-- **LaTeX documentation** for specifications and reports.
+## Tech Stack
+1. Python 3.11+
+2. Django 5.x
+3. SQLite in development
+4. Folium for map rendering
 
----
+## Quick Start
+1. Create and activate the virtual environment:
+```bash
+python3 -m venv src/python/venv
+source src/python/venv/bin/activate
+```
 
-## **🏗️ Architecture**
-SkyScore follows a **modular Django architecture**:
-- Each feature is a **separate Django app** (e.g., `season/`, `competition/`, `scoring/`).
-- Shared logic (authentication, base models) is in the `common/` app.
-- Menus are **dynamically generated** based on active apps and user permissions.
+2. Install dependencies:
+```bash
+pip install -r src/python/requirements.txt
+```
 
-See [docs/architecture.md](docs/architecture.md) for details.
+3. Apply migrations:
+```bash
+cd src/python
+venv/bin/python manage.py migrate
+```
 
----
+4. Run the project:
+```bash
+venv/bin/python manage.py runserver
+```
 
-## **🛠️ Setup Instructions**
-### Prerequisites
-- Python 3.11+
-- PostgreSQL (for production) or SQLite (for development)
-- LaTeX (for documentation)
+## Main URLs
+1. Login: /login/
+2. Home: /home/
+3. Seasons: /season/
+4. Database menu: /database/
+5. OSM tile proxy: /osm-tiles/<z>/<x>/<y>.png
 
-### Installation
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/tu_utilisateur/SkyScore.git
-   cd SkyScore
-   ```
-
-2. Set up a virtual environment:
-   ```bash
-   python3 -m venv src/python/venv
-   source src/python/venv/bin/activate  # On macOS/Linux
-   ```
-3. Install dependencies:
-   ```bash
-   pip install -r src/python/requirements.txt
-   ```
-4. Run Django migrations:
-   ```bash
-   cd src/python/
-   python3 manage.py migrate
-   ```
-5. Start the development server:
-   ```bash
-   python3 manage.py runserver
-   ```
-
-6. Access the app at http://127.0.0.1:8000.
-
-## **📂 Project Structure**
-See docs/architecture.md for the full structure.
-
-## **🤝 Contributing**
-Pull requests are welcome. For major changes, please open an issue first.
-
-## **📄 License**
-This project is licensed under the MIT License.
+## Documentation
+See:
+1. [docs/architecture.md](docs/architecture.md)
+2. [docs/actors_and_roles.md](docs/actors_and_roles.md)
+3. [docs/organizer_season_management.md](docs/organizer_season_management.md)

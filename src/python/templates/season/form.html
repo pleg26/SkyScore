@@ -9,7 +9,7 @@
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
-        <input type="submit" class="BtnSubmit" value="Save" />
+        <input type="submit" class="BtnValidate" value="Save" />
     </form>
 
     <p><a href="{% url 'season:list' %}">Back to seasons</a></p>
