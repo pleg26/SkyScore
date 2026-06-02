@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}Seasons{% endblock %}
+
+{% block content %}
+<section id="mainContent">
+    <h2>Season management</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Season</th>
+                <th>Dates</th>
+                <th>Global status</th>
+                <th>Your active season</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for season in seasons %}
+                <tr>
+                    <td>{{ season }}</td>
+                    <td>{{ season.start_date }} - {{ season.end_date }}</td>
+                    <td>{% if season.is_active %}Active{% else %}Archived{% endif %}</td>
+                    <td>
+                        {% if administrator and administrator.active_season_id == season.id %}
+                            Active
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'season:edit' season.pk %}">Edit</a>
+                        {% if user.role == 'ADM' %}
+                            <form method="post" action="{% url 'season:activate' season.pk %}" style="display:inline; margin-left: 8px;">
+                                {% csrf_token %}
+                                <button class="BtnSubmit" type="submit">Set active</button>
+                            </form>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="5">No seasons available.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endblock %}

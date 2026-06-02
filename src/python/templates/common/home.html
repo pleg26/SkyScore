@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+
+
+<section id="mainContent">
+    <h2>SkyScore - Documents</h2>
+
+    <h3>
+        <ul>
+            <li>
+                Regulations:
+                <a href="#" target="_blank">
+                    <img src="{% static 'img/logo_pdf.png' %}" width="30"/>
+                </a>
+            </li>
+            <li>
+                General regulations:
+                <a href="#" target="_blank">
+                    <img src="{% static 'img/logo_pdf.png' %}" width="30"/>
+                </a>
+            </li>
+        </ul>
+    </h3>
+</section>
+{% endblock %}

@@ -1,0 +1,153 @@
+:root {
+	--header-height: clamp(80px, 15vh, 140px);
+	--menu-height: clamp(42px, 6vh, 64px);
+	--safe-top: env(safe-area-inset-top, 0px);
+	--header-offset: 2px;
+}
+
+header{
+	position : fixed; 
+	left: 0;
+	top: calc(var(--safe-top) + var(--header-offset));
+	height: var(--header-height);
+	width:100%;
+	background-color: white;
+	background-image: url("../img/logo_skyscore.png"); 
+	background-repeat: no-repeat;
+	background-size: auto calc(100% - 4px);
+	background-position: left center;
+	z-index: 2;
+}
+
+body {
+	background-color: transparent;
+}
+
+body section#msgAccueil {
+	position:fixed;
+	top : calc(var(--safe-top) + var(--header-offset) + 4px);
+	left : 75%;
+	margin: 0;
+	padding: 0;
+	font-family: "Lucida Grande", Tahoma, Geneva, Verdana, Arial, Helvetica, sans-serif;
+	font-size: 14px;
+	color: black;
+	background-color: transparent;
+	z-index: 2;
+}
+
+/* Bouttons submit pour l'ensemble de la page */
+.BtnSubmit {
+	width:auto;
+	display: inline-block;
+	box-sizing: border-box;
+	text-align: center;
+	text-decoration: none;
+	color: black;
+	background-color: lightgrey;
+	border-bottom: 1px solid black;
+	border-radius: 10px;
+	padding: 2px 10px;
+}
+
+.BtnSubmit:hover {
+	color: lightgrey;
+	background-color: black;
+}
+
+.BtnPdf {
+	text-decoration: none;
+	color: red;
+	background-color: white;
+	border-bottom: 1px solid red;
+	border-radius: 10px;
+	padding: 4px 12px;
+	font-weight: bold;
+	cursor: pointer;
+}
+
+.BtnPdf:hover {
+	color: white;
+	background-color: red;
+}
+
+.BtnPdfShow {
+	width : auto;
+	text-decoration: none;
+	color: green;
+	background-color: white;
+	border-bottom: 1px solid green;
+	border-radius: 10px;
+	padding: 2px 10px;
+}
+
+.BtnPdfShow:hover {
+	color: white;
+	background-color: green;
+}
+
+/* mainContent */
+body section#mainContent {
+	position : absolute;
+	width: 80%;
+	top : calc(var(--safe-top) + var(--header-offset) + var(--header-height) + var(--menu-height) + 2%);
+	left: 0%;
+	margin-top: 2%;
+	margin-bottom: 2%;
+	margin-left: 10%;
+	margin-right: 20%;
+	padding: 0px;
+	z-index: 1;
+}
+
+/* form */
+form label {
+	display : block;
+	width : 150px;
+	float : left;
+	text-align: right;
+	padding : 4px 10px 0 0;
+}
+
+form input[type='email'], form input[type='password'] {
+	display : block;
+	width : 250px;
+	padding : 2px;
+}
+
+form input[type='submit'] {
+	margin : 0 20px 0 160px;
+	padding : 2px 15px 3px 15px;
+	text-align: center;
+	width : auto;
+}
+
+p.error{
+	margin-left: 160px;
+	color: red;
+}
+
+/* login form alignment */
+form.loginForm .loginRow {
+	display: flex;
+	align-items: center;
+	margin: 8px 0;
+}
+
+form.loginForm .loginRow label {
+	float: none;
+	width: 150px;
+	text-align: right;
+	padding: 0 10px 0 0;
+}
+
+form.loginForm .loginRow input[type='email'],
+form.loginForm .loginRow input[type='password'] {
+	width: 250px;
+	padding: 2px;
+}
+
+form.loginForm .loginSubmitRow {
+	margin: 12px 0 0 160px;
+}
+

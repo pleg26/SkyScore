@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<section id="mainContent">
+    <h2>{{ page_title }}</h2>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" class="BtnSubmit" value="Save" />
+    </form>
+
+    <p><a href="{% url 'season:list' %}">Back to seasons</a></p>
+</section>
+{% endblock %}

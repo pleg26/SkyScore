@@ -1,28 +1,24 @@
 {% load static %}
 
-<nav>
-    <ul>
-        <!-- Common links (visible to all) -->
-        {% if user.is_authenticated %}
-            <li><a href="{% url 'logout' %}">Logout</a></li>
-        {% else %}
-            <li><a href="{% url 'login' %}">Login</a></li>
-        {% endif %}
+{% if request.resolver_match.view_name != 'common:login' %}
+    <div id="menuPrincipal">
+        <nav>
+            <ul id="menu">
+                <!-- Common links (visible to all) -->
+                {% if user.is_authenticated %}
+                    <li><a href="{% url 'common:home' %}">Home</a></li>
+                {% else %}
+                    <li><a href="{% url 'common:login' %}">Login</a></li>
+                {% endif %}
 
-        <!-- Organizer links -->
-        {% if user.is_authenticated and user.role == 'ORG' %}
-            <li><a href="{% url 'season:list' %}">Seasons</a></li>
-            <li><a href="{% url 'competition:list' %}">Competitions</a></li>
-        {% endif %}
+                <!-- Organizer links -->
+                {% if user.is_authenticated %}
+                    {% if user.role == 'ORG' or user.role == 'ADM' %}
+                        <li><a href="{% url 'season:list' %}">Seasons</a></li>
+                    {% endif %}
+                {% endif %}
 
-        <!-- Judge links -->
-        {% if user.is_authenticated and user.role == 'JUD' %}
-            <li><a href="{% url 'scoring:list' %}">Scoring</a></li>
-        {% endif %}
-
-        <!-- Pilot links -->
-        {% if user.is_authenticated and user.role == 'PIL' %}
-            <li><a href="{% url 'pilot:dashboard' %}">My Results</a></li>
-        {% endif %}
-    </ul>
-</nav>
+            </ul>
+        </nav>
+    </div>
+{% endif %}

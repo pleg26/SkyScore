@@ -1,18 +1,41 @@
+{% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en"> 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SkyScore - {% block title %}{% endblock %}</title>
-    <!-- Add CSS/JS here -->
+    <link rel="stylesheet" type="text/css" href="{% static 'css/styleBaseHome.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'css/styleMenuPrincipal.css' %}" />
 </head>
 <body>
     <header>
-        <h1>SkyScore</h1>
         {% include "navigation.html" %}
     </header>
+    <section id="msgAccueil">
+        <p>{{ current_date_time }}</p>
+        <p>{{ tzinfo }}</p>
+        {% if user.is_authenticated %}
+            <p><b>Logged admin : </b>{{ loggedAdmin }}</p>
+            <form action="{% url 'common:logout' %}" method="post">
+                {% csrf_token %}
+                <p>
+                    <input type="submit" value="Deconnect" class="BtnSubmit" />
+                </p>
+            </form>
+        {% endif %}
+    </section>
 
     <main>
+        {% if messages %}
+            <section>
+                <ul>
+                    {% for message in messages %}
+                        <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            </section>
+        {% endif %}
         {% block content %}{% endblock %}
     </main>
 

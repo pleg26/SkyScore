@@ -1,0 +1,67 @@
+/* Menu Principal*/
+#menuPrincipal {
+	position : fixed;
+	width: 100%;
+	top : calc(env(safe-area-inset-top, 0px) + var(--header-offset, 3px) + clamp(80px, 15vh, 140px));
+	margin: 0px;
+	padding: 0px;
+	font-family: "Lucida Grande", Tahoma, Geneva, Verdana, Arial, Helvetica, sans-serif;
+	font-size: 14px;
+	background-color:white;
+	z-index: 8;
+}
+
+#menuPrincipal nav {
+	width: 100%;
+	margin: 0 auto;
+	background-color: white;
+	position : sticky;
+	top:0px;
+}
+
+#menu, .sm, .ssm {
+	list-style-type: none;
+}
+
+#menu li{
+	float: left;
+	width:12%;
+	text-align: center;
+}
+
+#menuPrincipal nav a{
+	display: block;
+	text-decoration: none;
+	color: darkblue;
+	border-bottom: 2px solid transparent;
+	padding: 10px 0px;
+}
+
+#menuPrincipal nav a:hover{
+	color: white;
+	background-color: darkblue;
+}
+
+.sm {
+	position : absolute;
+	display: none;
+	box-shadow: 0px 1px 2px #CCC;
+	background-color: white;
+}
+
+.ssm {
+	position : sticky;
+	display: none;
+	box-shadow: 0px 1px 2px #CCC;
+	background-color: white;
+}
+
+#menu li:hover .sm, .sm li:hover .ssm {
+	display: block;
+}
+
+#menu li ul li{
+	float:none;
+	width: 100%;
+	text-align: left;
+}

@@ -1,0 +1,26 @@
+{% extends 'base.html' %} 
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<section id="msgAccueil">
+    <p>{{ current_date_time }}</p>
+</section>
+
+<section id="mainContent">
+    <h1>Login</h1>
+    <p><em>Email is required to log in</em></p>
+    <form class="loginForm" action="{% url 'common:login' %}" method="post">
+        {% csrf_token %}
+        {% for field in form %}
+            <p class="loginRow">
+                {{ field.label_tag }}
+                {{ field }}
+            </p>
+        {% endfor %}
+        <p class="loginSubmitRow">
+            <input type="submit" value="Validate" class="BtnSubmit" />
+        </p>
+    </form>
+</section>
+{% endblock %}
