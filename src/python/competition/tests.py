@@ -1,9 +1,11 @@
 from datetime import date
 
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
 from django.test import TestCase
 
 from common.models import Administrator
+from database.models import Competitor
 from season.models import Season
 
 from .models import Airfield, Competition, Country
@@ -110,3 +112,52 @@ class CompetitionSeasonLinkTests(TestCase):
         )
 
         self.assertEqual(list(Competition.objects.all()), [early, late])
+
+    def test_competition_rejects_competitor_with_different_aircraft_type(self):
+        competition = Competition.objects.create(
+            name='Paramotor Competition',
+            level='NATIONAL',
+            sub_level='OPEN',
+            type='PARAMOTOR',
+            subtype='SLALOM',
+            start_date=date(2026, 7, 20),
+            end_date=date(2026, 7, 21),
+            country=self.country,
+            airfield=self.airfield,
+        )
+        microlight_competitor = Competitor.objects.create(
+            first_name='Microlight',
+            last_name='Pilot',
+            aircraft_type='MICROLIGHT',
+            competitor_type='PILOT',
+            country=self.country,
+        )
+
+        with self.assertRaises(ValidationError):
+            competition.competitors.add(microlight_competitor)
+
+    def test_competition_rejects_competitor_without_insurance_or_medical(self):
+        competition = Competition.objects.create(
+            name='Safety Check Competition',
+            level='NATIONAL',
+            sub_level='OPEN',
+            type='PARAMOTOR',
+            subtype='SLALOM',
+            start_date=date(2026, 7, 20),
+            end_date=date(2026, 7, 21),
+            country=self.country,
+            airfield=self.airfield,
+        )
+        ineligible_competitor = Competitor.objects.create(
+            first_name='Unsafe',
+            last_name='Pilot',
+            aircraft_type='PARAMOTOR',
+            aircraft_class='PL2',
+            competitor_type='PILOT',
+            insurance_valid=False,
+            medical_certificate_valid=False,
+            country=self.country,
+        )
+
+        with self.assertRaises(ValidationError):
+            competition.competitors.add(ineligible_competitor)

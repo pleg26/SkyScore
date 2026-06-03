@@ -1,0 +1,238 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My settings{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/styleBaseHome.css' %}" />
+<style>
+form.profileForm .profileRow {
+    display: flex;
+    align-items: center;
+    margin: 8px 0;
+}
+
+form.profileForm .profileRow label {
+    float: none;
+    width: 180px;
+    text-align: right;
+    padding: 0 10px 0 0;
+}
+
+form.profileForm .profileRow input[type='text'],
+form.profileForm .profileRow input[type='email'],
+form.profileForm .profileRow input[type='tel'],
+form.profileForm .profileRow input[type='password'],
+form.profileForm .profileRow input[type='date'],
+form.profileForm .profileRow select {
+    width: 250px;
+    padding: 2px;
+}
+
+form.profileForm .profileRow.checkboxRow {
+    align-items: flex-start;
+}
+
+form.profileForm .profileRow.checkboxRow input[type='checkbox'] {
+    margin-top: 4px;
+}
+
+form.profileForm .profileRow .fieldErrors {
+    color: red;
+    margin: 4px 0 0 190px;
+}
+
+form.profileForm .profileActions {
+    margin: 12px 0 0 190px;
+    display: flex;
+    gap: 8px;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<section id="mainContent">
+    <h2>My settings</h2>
+    <form method="post" class="profileForm">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+            {% for err in form.non_field_errors %}
+                <p class="error">{{ err }}</p>
+            {% endfor %}
+        {% endif %}
+
+        <div class="profileRow">
+            {{ form.email.label_tag }}
+            {{ form.email }}
+        </div>
+        {% for err in form.email.errors %}
+            <p class="error">{{ err }}</p>
+        {% endfor %}
+
+        <div class="profileRow">
+            {{ form.first_name.label_tag }}
+            {{ form.first_name }}
+        </div>
+        {% for err in form.first_name.errors %}
+            <p class="error">{{ err }}</p>
+        {% endfor %}
+
+        <div class="profileRow">
+            {{ form.last_name.label_tag }}
+            {{ form.last_name }}
+        </div>
+        {% for err in form.last_name.errors %}
+            <p class="error">{{ err }}</p>
+        {% endfor %}
+
+        <div class="profileRow">
+            {{ form.country.label_tag }}
+            {{ form.country }}
+        </div>
+        {% for err in form.country.errors %}
+            <p class="error">{{ err }}</p>
+        {% endfor %}
+
+        <div class="profileRow">
+            {{ form.phone_number.label_tag }}
+            {{ form.phone_number }}
+        </div>
+        {% for err in form.phone_number.errors %}
+            <p class="error">{{ err }}</p>
+        {% endfor %}
+
+        <div class="profileRow">
+            {{ form.date_of_birth.label_tag }}
+            {{ form.date_of_birth }}
+        </div>
+        {% for err in form.date_of_birth.errors %}
+            <p class="error">{{ err }}</p>
+        {% endfor %}
+
+        <div class="profileRow">
+            {{ form.sex.label_tag }}
+            {{ form.sex }}
+        </div>
+        {% for err in form.sex.errors %}
+            <p class="error">{{ err }}</p>
+        {% endfor %}
+
+        <div class="profileRow">
+            {{ form.fai_licence_number.label_tag }}
+            {{ form.fai_licence_number }}
+        </div>
+        {% for err in form.fai_licence_number.errors %}
+            <p class="error">{{ err }}</p>
+        {% endfor %}
+
+        <div class="profileRow">
+            {{ form.national_licence_number.label_tag }}
+            {{ form.national_licence_number }}
+        </div>
+        {% for err in form.national_licence_number.errors %}
+            <p class="error">{{ err }}</p>
+        {% endfor %}
+
+        <div class="profileRow">
+            {{ form.club.label_tag }}
+            {{ form.club }}
+        </div>
+        {% for err in form.club.errors %}
+            <p class="error">{{ err }}</p>
+        {% endfor %}
+
+        <div class="profileRow checkboxRow">
+            {{ form.change_password.label_tag }}
+            {{ form.change_password }}
+        </div>
+        {% for err in form.change_password.errors %}
+            <p class="error">{{ err }}</p>
+        {% endfor %}
+
+        <div class="profileRow">
+            {{ form.password1.label_tag }}
+            {{ form.password1 }}
+        </div>
+        {% if form.password1.help_text %}
+            <p class="error">{{ form.password1.help_text }}</p>
+        {% endif %}
+        {% for err in form.password1.errors %}
+            <p class="error">{{ err }}</p>
+        {% endfor %}
+
+        <div class="profileRow">
+            {{ form.password2.label_tag }}
+            {{ form.password2 }}
+        </div>
+        {% if form.password2.help_text %}
+            <p class="error">{{ form.password2.help_text }}</p>
+        {% endif %}
+        {% for err in form.password2.errors %}
+            <p class="error">{{ err }}</p>
+        {% endfor %}
+
+        <div class="profileActions">
+            <button type="submit" class="BtnValidate">Save</button>
+            <a class="BtnCancel" href="{% url 'common:home' %}">Cancel</a>
+        </div>
+    </form>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const countrySelect = document.querySelector('select[name="country"]');
+    const phoneInput = document.querySelector('input[name="phone_number"]');
+    if (countrySelect && phoneInput) {
+        let dialMap = {};
+        try {
+            dialMap = JSON.parse(countrySelect.dataset.countryDialMap || '{}');
+        } catch (error) {
+            dialMap = {};
+        }
+
+        let currentDial = '';
+        function syncPhonePrefix() {
+            const selectedCountryId = countrySelect.value;
+            const nextDial = dialMap[selectedCountryId] || '';
+            const currentValue = (phoneInput.value || '').trim();
+
+            if (!nextDial) {
+                currentDial = '';
+                return;
+            }
+
+            if (!currentValue || currentValue === currentDial) {
+                phoneInput.value = nextDial;
+            }
+            currentDial = nextDial;
+        }
+
+        countrySelect.addEventListener('change', syncPhonePrefix);
+        syncPhonePrefix();
+    }
+
+    const checkbox = document.querySelector('input[name="change_password"]');
+    const pwd1 = document.querySelector('input[name="password1"]');
+    const pwd2 = document.querySelector('input[name="password2"]');
+    if (!checkbox || !pwd1 || !pwd2) {
+        return;
+    }
+
+    function syncPasswordFields() {
+        const enabled = checkbox.checked;
+        pwd1.disabled = !enabled;
+        pwd2.disabled = !enabled;
+        if (!enabled) {
+            pwd1.value = '';
+            pwd2.value = '';
+        }
+    }
+
+    checkbox.addEventListener('change', syncPasswordFields);
+    syncPasswordFields();
+});
+</script>
+{% endblock %}

@@ -13,10 +13,12 @@
 
                 <!-- Organizer links -->
                 {% if user.is_authenticated %}
-                    {% if user.role == 'ORG' or user.role == 'ADM' %}
+                    {% if user.can_manage_database %}
                         <li>
                             <a href="#">Database</a>
                             <ul class="sm">
+                                <li><a href="{% url 'database:user_list' %}">User</a></li>
+                                <li><a href="{% url 'database:competitor_list' %}">Competitor</a></li>
                                 <li><a href="{% url 'database:country_list' %}">Country</a></li>
                                 <li><a href="{% url 'database:airfield_list' %}">Airfield</a></li>
                             </ul>
@@ -25,7 +27,7 @@
                 {% endif %}
                 
                 {% if user.is_authenticated %}
-                    {% if user.role == 'ORG' or user.role == 'ADM' %}
+                    {% if user.can_manage_seasons %}
                         <li>
                             <a href="#">Seasons</a>
                             <ul class="sm">

@@ -9,5 +9,6 @@ urlpatterns = [
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
     path('home/', views.home_view, name='home'),
+    path('profile/settings/', views.profile_settings_view, name='profile_settings'),
     path('osm-tiles/<int:z>/<int:x>/<int:y>.png', views.osm_tile_proxy, name='osm_tile_proxy'),
 ]

@@ -18,6 +18,9 @@
         <p>{{ tzinfo }}</p>
         {% if user.is_authenticated %}
             <p><b>Logged admin : </b>{{ loggedAdmin }}</p>
+            <p>
+                <a class="BtnModify" href="{% url 'common:profile_settings' %}">My settings</a>
+            </p>
             <form action="{% url 'common:logout' %}" method="post">
                 {% csrf_token %}
                 <p>
@@ -29,10 +32,10 @@
 
     <main>
         {% if messages %}
-            <section>
+            <section id="flashMessages">
                 <ul>
                     {% for message in messages %}
-                        <li>{{ message }}</li>
+                        <li data-message-tags="{{ message.tags|default:'' }}">{{ message }}</li>
                     {% endfor %}
                 </ul>
             </section>
@@ -43,5 +46,86 @@
     <footer>
         <p>&copy; 2026 SkyScore</p>
     </footer>
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const flashRoot = document.getElementById('flashMessages');
+        if (!flashRoot) {
+            return;
+        }
+
+        const popupMessages = Array.from(flashRoot.querySelectorAll('li[data-message-tags*="popup"]'))
+            .map(function (node) {
+                return (node.textContent || '').trim();
+            })
+            .filter(Boolean);
+
+        if (!popupMessages.length) {
+            return;
+        }
+
+        const container = document.createElement('div');
+        container.setAttribute('aria-live', 'polite');
+        container.style.position = 'fixed';
+        container.style.top = '12px';
+        container.style.right = '12px';
+        container.style.zIndex = '1000';
+        container.style.display = 'flex';
+        container.style.flexDirection = 'column';
+        container.style.gap = '8px';
+
+        popupMessages.forEach(function (text) {
+            const toast = document.createElement('div');
+            toast.style.background = '#ffffff';
+            toast.style.color = '#1f2937';
+            toast.style.border = '1px solid #93c5fd';
+            toast.style.borderLeft = '4px solid #2563eb';
+            toast.style.boxShadow = '0 4px 14px rgba(0,0,0,0.15)';
+            toast.style.borderRadius = '8px';
+            toast.style.padding = '10px 12px';
+            toast.style.minWidth = '280px';
+            toast.style.maxWidth = '420px';
+
+            const message = document.createElement('div');
+            message.textContent = text;
+            message.style.marginRight = '18px';
+
+            const close = document.createElement('button');
+            close.type = 'button';
+            close.textContent = 'x';
+            close.style.position = 'absolute';
+            close.style.top = '6px';
+            close.style.right = '8px';
+            close.style.border = 'none';
+            close.style.background = 'transparent';
+            close.style.cursor = 'pointer';
+            close.style.fontWeight = 'bold';
+            close.style.color = '#374151';
+
+            toast.style.position = 'relative';
+            toast.appendChild(message);
+            toast.appendChild(close);
+            container.appendChild(toast);
+
+            close.addEventListener('click', function () {
+                toast.remove();
+                if (!container.children.length) {
+                    container.remove();
+                }
+            });
+
+            setTimeout(function () {
+                if (toast.isConnected) {
+                    toast.remove();
+                    if (!container.children.length) {
+                        container.remove();
+                    }
+                }
+            }, 7000);
+        });
+
+        document.body.appendChild(container);
+    });
+    </script>
+    {% block extra_js %}{% endblock %}
 </body>
 </html>

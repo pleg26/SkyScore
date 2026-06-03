@@ -10,7 +10,7 @@ from .models import Season
 
 
 def _can_manage_seasons(user):
-    return user.is_authenticated and user.role in {'ADM', 'ORG'}
+    return user.is_authenticated and user.has_any_role({'ADM', 'ORG'})
 
 
 @login_required
@@ -100,7 +100,7 @@ def season_activate_view(request, pk):
     if request.method != 'POST':
         return redirect('season:select')
 
-    if request.user.role != 'ADM':
+    if not request.user.has_role('ADM'):
         messages.error(request, 'Only administrators can switch the active season.')
         return redirect('season:select')
 

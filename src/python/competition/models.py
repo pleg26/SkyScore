@@ -1,25 +1,14 @@
 from datetime import date
 
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.db import models
+from django.db.models.signals import m2m_changed
+from django.dispatch import receiver
 
 from common.models import Administrator
-from database.models import Airfield, Country
+from database.models import Airfield, Country, Competitor
 from season.models import Season
-
-
-class Competitor(models.Model):
-    first_name = models.CharField(max_length=100)
-    last_name = models.CharField(max_length=100)
-    country = models.ForeignKey(Country, on_delete=models.PROTECT, related_name='competitors', null=True, blank=True)
-
-    class Meta:
-        verbose_name = 'Competitor'
-        verbose_name_plural = 'Competitors'
-        ordering = ['last_name', 'first_name']
-
-    def __str__(self):
-        return f"{self.first_name} {self.last_name}"
 
 
 class Task(models.Model):
@@ -107,6 +96,28 @@ class Competition(models.Model):
     def __str__(self):
         return f"{self.name} ({self.start_date})"
 
+    def clean(self):
+        super().clean()
+        invalid_competitors = self.competitors.exclude(aircraft_type=self.type)
+        if invalid_competitors.exists():
+            raise ValidationError(
+                {
+                    'competitors': (
+                        f'Only competitors with aircraft type {self.get_type_display()} can be linked to this competition.'
+                    )
+                }
+            )
+
+        ineligible_competitors = self.competitors.filter(
+            models.Q(insurance_valid=False) | models.Q(medical_certificate_valid=False)
+        )
+        if ineligible_competitors.exists():
+            raise ValidationError(
+                {
+                    'competitors': 'Competitors must have insurance and medical certificate marked as valid.'
+                }
+            )
+
     def save(self, *args, **kwargs):
         year = self.start_date.year
         season, _ = Season.objects.get_or_create(
@@ -125,7 +136,7 @@ class Competition(models.Model):
             season.is_active = True
             season.save(update_fields=['is_active'])
 
-        if self.created_by and self.created_by.role == 'ADM':
+        if self.created_by and self.created_by.has_role('ADM'):
             administrator, _ = Administrator.objects.get_or_create(user=self.created_by)
             if administrator.active_season_id != season.id:
                 administrator.active_season = season
@@ -133,3 +144,21 @@ class Competition(models.Model):
 
         self.season = season
         super().save(*args, **kwargs)
+
+
+@receiver(m2m_changed, sender=Competition.competitors.through)
+def validate_competition_competitors_aircraft_type(sender, instance, action, pk_set, **kwargs):
+    if action != 'pre_add' or not pk_set:
+        return
+
+    invalid_competitors = Competitor.objects.filter(pk__in=pk_set).exclude(aircraft_type=instance.type)
+    if invalid_competitors.exists():
+        raise ValidationError(
+            f'Only competitors with aircraft type {instance.get_type_display()} can be linked to this competition.'
+        )
+
+    ineligible_competitors = Competitor.objects.filter(pk__in=pk_set).filter(
+        models.Q(insurance_valid=False) | models.Q(medical_certificate_valid=False)
+    )
+    if ineligible_competitors.exists():
+        raise ValidationError('Competitors must have insurance and medical certificate marked as valid.')

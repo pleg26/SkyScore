@@ -1,0 +1,205 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}User management{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/styleBaseDataBase.css' %}" />
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.querySelector('#asideContent form');
+    if (!form) {
+        return;
+    }
+
+    const countrySelect = form.querySelector('select[name="country"]');
+    const phoneInput = form.querySelector('input[name="phone_number"]');
+    if (countrySelect && phoneInput) {
+        let dialMap = {};
+        try {
+            dialMap = JSON.parse(countrySelect.dataset.countryDialMap || '{}');
+        } catch (error) {
+            dialMap = {};
+        }
+
+        let currentDial = '';
+        function syncPhonePrefix() {
+            const selectedCountryId = countrySelect.value;
+            const nextDial = dialMap[selectedCountryId] || '';
+            const currentValue = (phoneInput.value || '').trim();
+
+            if (!nextDial) {
+                currentDial = '';
+                return;
+            }
+
+            if (!currentValue || currentValue === currentDial) {
+                phoneInput.value = nextDial;
+            }
+            currentDial = nextDial;
+        }
+
+        countrySelect.addEventListener('change', syncPhonePrefix);
+        syncPhonePrefix();
+    }
+
+    const passwordInputs = Array.from(form.querySelectorAll('#id_password1, #id_password2'));
+    if (!passwordInputs.length) {
+        return;
+    }
+
+    const changePasswordCheckbox = form.querySelector('input[name="change_password"]');
+    const passwordPairs = [];
+
+    function setPasswordVisibility(input, button, visible) {
+        input.type = visible ? 'text' : 'password';
+        button.classList.toggle('is-visible', visible);
+        button.classList.toggle('is-hidden', !visible);
+        button.setAttribute('aria-label', visible ? 'Hide password' : 'Show password');
+        button.title = visible ? 'Hide password' : 'Show password';
+    }
+
+    function bindPasswordToggle(input, button) {
+        button.addEventListener('mousedown', function (event) {
+            event.preventDefault();
+        });
+
+        button.addEventListener('click', function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            if (button.disabled || input.disabled) {
+                return;
+            }
+            setPasswordVisibility(input, button, input.type === 'password');
+        });
+    }
+
+    passwordInputs.forEach(function (input) {
+        const wrapper = document.createElement('span');
+        wrapper.className = 'password-toggle-wrap';
+        input.parentNode.insertBefore(wrapper, input);
+        wrapper.appendChild(input);
+
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'password-toggle-button is-hidden';
+        button.dataset.passwordTarget = input.id;
+        button.setAttribute('aria-label', 'Show password');
+        button.title = 'Show password';
+        bindPasswordToggle(input, button);
+
+        wrapper.appendChild(button);
+        passwordPairs.push({ input, button });
+    });
+
+    function syncPasswordFieldState() {
+        if (!changePasswordCheckbox) {
+            return;
+        }
+        const enabled = changePasswordCheckbox.checked;
+        passwordPairs.forEach(function (pair) {
+            const input = pair.input;
+            const button = pair.button;
+            input.disabled = !enabled;
+            button.disabled = !enabled;
+            if (enabled) {
+                input.type = 'password';
+                setPasswordVisibility(input, button, false);
+            } else {
+                input.value = '';
+                setPasswordVisibility(input, button, false);
+            }
+        });
+    }
+
+    if (changePasswordCheckbox) {
+        changePasswordCheckbox.addEventListener('change', syncPasswordFieldState);
+        syncPasswordFieldState();
+    }
+});
+</script>
+{% endblock %}
+
+{% block content %}
+{% if show_create_form or show_edit_form %}
+<section id="asideContent">
+    <h2>{{ aside_title }}</h2>
+    <form class="user-form" method="post" action="{% if form_action_pk %}{% url form_action form_action_pk %}{% else %}{% url form_action %}{% endif %}">
+        {% csrf_token %}
+        {% if form.non_field_errors %}
+            <div class="user-form-row user-form-row-errors">
+                <div class="user-form-label-spacer"></div>
+                <div class="user-form-control">
+                    {% for err in form.non_field_errors %}
+                        <p class="error">{{ err }}</p>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+
+        {% for field in form %}
+            <div class="user-form-row{% if field.name == 'roles' %} user-form-row-multicheck{% endif %}{% if field.name == 'is_active' or field.name == 'change_password' %} user-form-row-checkbox{% endif %}">
+                {{ field.label_tag }}
+                <div class="user-form-control">
+                    {{ field }}
+                    {% if field.help_text %}
+                        <span class="helptext">{{ field.help_text }}</span>
+                    {% endif %}
+                    {% for err in field.errors %}
+                        <p class="error">{{ err }}</p>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endfor %}
+
+        <div class="form-actions">
+            <button class="BtnValidate" type="submit">Save</button>
+            <a class="BtnCancel" href="{% url 'database:user_list' %}">Cancel</a>
+        </div>
+    </form>
+</section>
+{% endif %}
+
+<section id="mainContent">
+    <h2>User management</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Email</th>
+                <th>Role</th>
+                <th>First name</th>
+                <th>Last name</th>
+                <th>Active</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user_account in users %}
+                <tr>
+                    <td>{{ user_account.email }}</td>
+                    <td>{{ user_account.get_role_display }}</td>
+                    <td>{{ user_account.first_name }}</td>
+                    <td>{{ user_account.last_name }}</td>
+                    <td>{% if user_account.is_active %}Yes{% else %}No{% endif %}</td>
+                    <td>
+                        <a class="BtnModify" href="{% url 'database:user_edit' user_account.pk %}">Modify</a>
+                        {% if user_account.pk != logged_user_id %}
+                            <form method="post" action="{% url 'database:user_delete' user_account.pk %}" style="display:inline; margin-left: 8px;" onsubmit="return confirm('Confirm deletion of ' + '{{ user_account.email|escapejs }}' + ' ?');">
+                                {% csrf_token %}
+                                <button class="BtnDelete" type="submit">Delete</button>
+                            </form>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="6">No user in database</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endblock %}

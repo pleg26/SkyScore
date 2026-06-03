@@ -1,0 +1,325 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Competitor management{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/styleBaseDataBase.css' %}" />
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.querySelector('#asideContent form');
+    if (!form) {
+        return;
+    }
+
+    const countrySelect = form.querySelector('select[name="country"]');
+    const phoneInput = form.querySelector('input[name="phone_number"]');
+    const aircraftTypeSelect = form.querySelector('select[name="aircraft_type"]');
+    const aircraftClassSelect = form.querySelector('select[name="aircraft_class"]');
+    const competitorTypeSelect = form.querySelector('select[name="competitor_type"]');
+    const crewSelect = form.querySelector('select[name="crew"]');
+    const crewHelpText = form.querySelector('#id_crew_helptext');
+    const crewRow = crewSelect ? crewSelect.closest('p') : null;
+    const equipmentFieldNames = [
+        'cell_manufacturer',
+        'cell_model',
+        'engine_manufacturer',
+        'engine_model',
+        'cart_manufacturer',
+        'cart_model',
+        'wing_manufacturer',
+        'wing_model',
+        'wing_length',
+        'wing_surface',
+        'wing_ptv',
+        'crew_weight'
+    ];
+    const equipmentRows = {};
+    equipmentFieldNames.forEach(function (fieldName) {
+        const field = form.querySelector('[name="' + fieldName + '"]');
+        if (field) {
+            equipmentRows[fieldName] = { field: field, row: field.closest('p') };
+        }
+    });
+
+    function setFieldVisibility(fieldName, visible) {
+        const entry = equipmentRows[fieldName];
+        if (!entry) {
+            return;
+        }
+        if (entry.row) {
+            entry.row.style.display = visible ? '' : 'none';
+        }
+        entry.field.disabled = !visible;
+        if (!visible) {
+            entry.field.value = '';
+        }
+    }
+
+    function setFieldLabel(fieldName, labelText) {
+        const label = form.querySelector('label[for="id_' + fieldName + '"]');
+        if (label) {
+            label.textContent = labelText + ':';
+        }
+    }
+
+    if (countrySelect && phoneInput) {
+        let dialMap = {};
+        try {
+            dialMap = JSON.parse(countrySelect.dataset.countryDialMap || '{}');
+        } catch (error) {
+            dialMap = {};
+        }
+
+        let currentDial = '';
+        function syncPhonePrefix() {
+            const selectedCountryId = countrySelect.value;
+            const nextDial = dialMap[selectedCountryId] || '';
+            const currentValue = (phoneInput.value || '').trim();
+
+            if (!nextDial) {
+                currentDial = '';
+                return;
+            }
+
+            if (!currentValue || currentValue === currentDial) {
+                phoneInput.value = nextDial;
+            }
+            currentDial = nextDial;
+        }
+
+        countrySelect.addEventListener('change', syncPhonePrefix);
+        syncPhonePrefix();
+    }
+
+    if (aircraftTypeSelect && competitorTypeSelect && crewSelect) {
+        let crewOptions = [];
+        try {
+            crewOptions = JSON.parse(crewSelect.dataset.crewOptions || '[]');
+        } catch (error) {
+            crewOptions = [];
+        }
+
+        const placeholderText = '---------';
+
+        function syncCrewOptions() {
+            const selectedType = competitorTypeSelect.value;
+            const selectedAircraftType = aircraftTypeSelect.value;
+            const selectedAircraftClass = aircraftClassSelect ? aircraftClassSelect.value : '';
+            const crewAllowed = !!selectedAircraftClass && selectedAircraftClass.endsWith('2');
+            const expectedCrewType = selectedType === 'PILOT' ? 'NAVIGATOR' : 'PILOT';
+            const previousCrewId = crewSelect.value;
+
+            if (crewHelpText) {
+                crewHelpText.textContent = crewAllowed
+                    ? (expectedCrewType.charAt(0) + expectedCrewType.slice(1).toLowerCase() + ' only')
+                    : 'Crew not available for class 1';
+            }
+
+            if (crewRow) {
+                crewRow.style.display = crewAllowed ? '' : 'none';
+            }
+
+            if (!crewAllowed) {
+                crewSelect.value = '';
+                return;
+            }
+
+            crewSelect.innerHTML = '';
+
+            const placeholder = document.createElement('option');
+            placeholder.value = '';
+            placeholder.textContent = placeholderText;
+            crewSelect.appendChild(placeholder);
+
+            let hasPreviousSelection = false;
+            crewOptions.forEach(function (optionData) {
+                if (optionData.type !== expectedCrewType) {
+                    return;
+                }
+                if (optionData.aircraftType !== selectedAircraftType) {
+                    return;
+                }
+                const option = document.createElement('option');
+                option.value = optionData.id;
+                option.textContent = optionData.label;
+                if (optionData.id === previousCrewId) {
+                    option.selected = true;
+                    hasPreviousSelection = true;
+                }
+                crewSelect.appendChild(option);
+            });
+
+            if (!hasPreviousSelection) {
+                crewSelect.value = '';
+            }
+        }
+
+        aircraftTypeSelect.addEventListener('change', syncCrewOptions);
+        competitorTypeSelect.addEventListener('change', syncCrewOptions);
+        syncCrewOptions();
+    }
+
+    if (competitorTypeSelect && aircraftTypeSelect && aircraftClassSelect) {
+        function syncEquipmentFields() {
+            const isNavigator = competitorTypeSelect.value === 'NAVIGATOR';
+            const aircraftType = aircraftTypeSelect.value;
+            const aircraftClass = aircraftClassSelect.value || '';
+            const isMicrolight = aircraftType === 'MICROLIGHT';
+            const isParamotor = aircraftType === 'PARAMOTOR';
+            const isTrike = isMicrolight && aircraftClass.indexOf('TRIKE') === 0;
+
+            equipmentFieldNames.forEach(function (fieldName) {
+                setFieldVisibility(fieldName, false);
+            });
+
+            if (isNavigator) {
+                return;
+            }
+
+            if (isParamotor) {
+                setFieldLabel('cart_manufacturer', 'Frame manufacturer');
+                setFieldLabel('cart_model', 'Frame model');
+                ['cart_manufacturer', 'cart_model', 'engine_manufacturer', 'engine_model', 'wing_manufacturer', 'wing_model', 'wing_length', 'wing_surface', 'wing_ptv', 'crew_weight'].forEach(function (fieldName) {
+                    setFieldVisibility(fieldName, true);
+                });
+                return;
+            }
+
+            if (isMicrolight && isTrike) {
+                setFieldLabel('cart_manufacturer', 'Cart manufacturer');
+                setFieldLabel('cart_model', 'Cart model');
+                ['cart_manufacturer', 'cart_model', 'engine_manufacturer', 'engine_model', 'wing_manufacturer', 'wing_model'].forEach(function (fieldName) {
+                    setFieldVisibility(fieldName, true);
+                });
+                return;
+            }
+
+            if (isMicrolight) {
+                setFieldLabel('cell_manufacturer', 'Aircraft manufacturer');
+                setFieldLabel('cell_model', 'Aircraft model');
+                ['cell_manufacturer', 'cell_model', 'engine_manufacturer', 'engine_model'].forEach(function (fieldName) {
+                    setFieldVisibility(fieldName, true);
+                });
+            }
+        }
+
+        competitorTypeSelect.addEventListener('change', syncEquipmentFields);
+        aircraftTypeSelect.addEventListener('change', syncEquipmentFields);
+        aircraftClassSelect.addEventListener('change', syncEquipmentFields);
+        syncEquipmentFields();
+    }
+
+    if (aircraftTypeSelect && aircraftClassSelect) {
+        let classChoicesByType = {};
+        try {
+            classChoicesByType = JSON.parse(aircraftClassSelect.dataset.aircraftClassChoices || '{}');
+        } catch (error) {
+            classChoicesByType = {};
+        }
+
+        function syncAircraftClassOptions() {
+            const selectedType = aircraftTypeSelect.value;
+            const availableClasses = classChoicesByType[selectedType] || [];
+            const previousValue = aircraftClassSelect.value;
+
+            aircraftClassSelect.innerHTML = '';
+
+            const emptyOption = document.createElement('option');
+            emptyOption.value = '';
+            emptyOption.textContent = '---------';
+            aircraftClassSelect.appendChild(emptyOption);
+
+            let hasPrevious = false;
+            availableClasses.forEach(function (classTuple) {
+                const option = document.createElement('option');
+                option.value = classTuple[0];
+                option.textContent = classTuple[1];
+                if (classTuple[0] === previousValue) {
+                    option.selected = true;
+                    hasPrevious = true;
+                }
+                aircraftClassSelect.appendChild(option);
+            });
+
+            if (!hasPrevious) {
+                aircraftClassSelect.value = '';
+            }
+
+            if (competitorTypeSelect) {
+                const event = new Event('change', { bubbles: true });
+                competitorTypeSelect.dispatchEvent(event);
+            }
+        }
+
+        aircraftTypeSelect.addEventListener('change', syncAircraftClassOptions);
+        aircraftClassSelect.addEventListener('change', function () {
+            if (aircraftTypeSelect && competitorTypeSelect && crewSelect) {
+                const event = new Event('change', { bubbles: true });
+                competitorTypeSelect.dispatchEvent(event);
+            }
+        });
+        syncAircraftClassOptions();
+    }
+});
+</script>
+{% endblock %}
+
+{% block content %}
+{% if show_create_form or show_edit_form %}
+<section id="asideContent">
+    <h2>{{ aside_title }}</h2>
+    <form method="post" action="{% if form_action_pk %}{% url form_action form_action_pk %}{% else %}{% url form_action %}{% endif %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <p class="form-actions">
+            <button class="BtnValidate" type="submit">Save</button>
+            <a class="BtnCancel" href="{% url 'database:competitor_list' %}">Cancel</a>
+        </p>
+    </form>
+</section>
+{% endif %}
+
+<section id="mainContent">
+    <h2>Competitor management</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>First name</th>
+                <th>Last name</th>
+                <th>Aircraft Type</th>
+                <th>Type</th>
+                <th>User</th>
+                <th>Country</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for competitor in competitors %}
+                <tr>
+                    <td>{{ competitor.first_name }}</td>
+                    <td>{{ competitor.last_name }}</td>
+                    <td>{{ competitor.get_aircraft_type_display }}</td>
+                    <td>{{ competitor.get_competitor_type_display }}</td>
+                    <td>{% if competitor.user %}{{ competitor.user.email }}{% else %}-{% endif %}</td>
+                    <td>{% if competitor.country %}{{ competitor.country.iso3 }}{% else %}-{% endif %}</td>
+                    <td>
+                        <a class="BtnModify" href="{% url 'database:competitor_edit' competitor.pk %}">Modify</a>
+                        <form method="post" action="{% url 'database:competitor_delete' competitor.pk %}" style="display:inline; margin-left: 8px;" onsubmit="return confirm('Confirm deletion of ' + '{{ competitor.first_name|escapejs }}' + ' ' + '{{ competitor.last_name|escapejs }}' + ' ?');">
+                            {% csrf_token %}
+                            <button class="BtnDelete" type="submit">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="7">No competitor in database</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endblock %}
